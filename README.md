@@ -1,5 +1,11 @@
 # 🌱 FoodWaste AI – Intelligent Multi-Object Waste Segregation
 
+[![CI Pipeline](https://github.com/Chiranjeeb1101/foodwaste-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Chiranjeeb1101/foodwaste-ai/actions)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/Framework-FastAPI%20%7C%20Uvicorn-009688.svg)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Edition](https://img.shields.io/badge/Edition-Odisha%20%2F%20India%20Context-orange.svg)]()
+
 > **India / Odisha Context Edition** – Multi-object waste understanding & decision-support system built for high-impact hackathon presentation.
 
 ---
@@ -64,6 +70,14 @@ http://localhost:8000
 ### 3. Interactive API Documentation (Swagger / OpenAPI)
 ```text
 http://localhost:8000/docs
+```
+
+### 4. Or Run via Terminal CLI (Instant Evaluation)
+```bash
+# Evaluate benchmark cases directly in PowerShell or Bash
+python demo_cli.py --preset case3
+python demo_cli.py --preset odisha_canteen
+python demo_cli.py --image path/to/your/image.jpg
 ```
 
 ---
