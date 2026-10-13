@@ -80,6 +80,20 @@ python demo_cli.py --preset odisha_canteen
 python demo_cli.py --image path/to/your/image.jpg
 ```
 
+### 5. Train the Custom YOLO Detector
+
+Install the optional training dependencies and provide a YOLO-format dataset at
+`dataset/data.yaml`:
+
+```bash
+pip install ultralytics torch
+python train_yolo.py
+```
+
+The training script refuses to run when `dataset/data.yaml` is missing, selects
+CUDA only when PyTorch reports it is available, and copies the best checkpoint
+to `app/models/waste_detector/best.pt` after validation.
+
 ---
 
 ## 🧪 Hackathon Demo Cheat Sheet (For Judges)

@@ -5,20 +5,46 @@ Optimized for Odisha/India regional waste conditions:
 - Heavy augmentations for crushed packaging, greasy plates, and dim lighting
 - Evaluates mAP@50 and mAP@50:95 across the 5 primary waste categories
 """
-import os
+import shutil
 from pathlib import Path
 
-def train_model():
+PROJECT_ROOT = Path(__file__).resolve().parent
+DEFAULT_DATASET = PROJECT_ROOT / "dataset" / "data.yaml"
+DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "runs" / "train"
+DEFAULT_TARGET_WEIGHTS_DIR = PROJECT_ROOT / "app" / "models" / "waste_detector"
+
+
+def _select_device():
+    """Use CUDA only when PyTorch confirms that it is available."""
+    try:
+        import torch
+    except ImportError:
+        return "cpu"
+    return 0 if torch.cuda.is_available() else "cpu"
+
+
+def train_model(
+    dataset_yaml: Path = DEFAULT_DATASET,
+    output_dir: Path = DEFAULT_OUTPUT_DIR,
+    target_weights_dir: Path = DEFAULT_TARGET_WEIGHTS_DIR,
+):
     try:
         from ultralytics import YOLO
     except ImportError:
-        print("[!] Ultralytics not installed. Install via: pip install ultralytics torch")
-        return
+        raise RuntimeError(
+            "Ultralytics is not installed. Install training dependencies with: "
+            "pip install ultralytics torch"
+        ) from None
 
-    # Base configuration
-    dataset_yaml = Path("dataset/data.yaml")
-    output_dir = Path("runs/train")
-    target_weights_dir = Path("app/models/waste_detector")
+    dataset_yaml = Path(dataset_yaml).expanduser().resolve()
+    output_dir = Path(output_dir).expanduser().resolve()
+    target_weights_dir = Path(target_weights_dir).expanduser().resolve()
+    if not dataset_yaml.is_file():
+        raise FileNotFoundError(
+            f"Dataset configuration not found: {dataset_yaml}. "
+            "Create dataset/data.yaml before training."
+        )
+
     target_weights_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
@@ -29,14 +55,17 @@ def train_model():
     model = YOLO("yolov8n.pt")
 
     # Hyperparameters tuned for messy canteen & street food waste
-    results = model.train(
-        data=str(dataset_yaml) if dataset_yaml.exists() else "coco8.yaml",
+    model.train(
+        data=str(dataset_yaml),
         epochs=50,
         imgsz=640,
         batch=16,
         patience=10,
         save=True,
-        device=0 if os.environ.get("CUDA_VISIBLE_DEVICES") else "cpu",
+        project=str(output_dir),
+        name="waste_detector",
+        exist_ok=True,
+        device=_select_device(),
         
         # Heavy real-world augmentations (simulates crushed and dirty waste)
         hsv_h=0.015,     # Color variation
@@ -54,14 +83,14 @@ def train_model():
     )
 
     print("\n✅ Training complete! Evaluating test metrics...")
-    metrics = model.val()
+    metrics = model.val(data=str(dataset_yaml))
     print(f"📊 mAP@50:    {metrics.box.map50:.4f}")
     print(f"📊 mAP@50-95: {metrics.box.map:.4f}")
 
     # Copy best weights to app model directory
-    best_pt = output_dir / "weights" / "best.pt"
+    run_dir = Path(getattr(model.trainer, "save_dir", output_dir / "waste_detector"))
+    best_pt = run_dir / "weights" / "best.pt"
     if best_pt.exists():
-        import shutil
         dest = target_weights_dir / "best.pt"
         shutil.copy(best_pt, dest)
         print(f"🎯 Saved best weights to: {dest}")
