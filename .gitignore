@@ -1,64 +1,39 @@
-# Byte-compiled / optimized / DLL files
+
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyd
+.pytest_cache/
+.mypy_cache/
 
 # Virtual environments
 venv/
 .venv/
 env/
-ENV/
-env.bak/
-venv.bak/
 
-# Testing & Cache
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
 
-# Logs & Databases
-*.log
-app/logs/predictions.jsonl
-app/logs/feedback.jsonl
-
-# Operating System & IDEs
-.DS_Store
-Thumbs.db
+# Editors and operating system
 .vscode/
 .idea/
-*.swp
-*.swo
+.DS_Store
+Thumbs.db
 
-# Large Model Weights (if downloaded locally)
-*.weights
-*.pt
-!app/models/waste_detector/README.txt
+# Logs and temporary files
+*.log
+tmp/
+temp/
 
-# Environment variables
-.env
-.env.local
+# Node.js
+node_modules/
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Dataset files - review before uploading
+dataset/
